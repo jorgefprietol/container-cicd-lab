@@ -66,6 +66,7 @@ try {
   try { & $deployScript -ImageRef 'ghcr.io/other/app:latest' -StateDirectory $testRoot } catch { $failed = $true }
   Assert-True $failed 'Una imagen externa o mutable debe rechazarse'
   Assert-True ($global:deploymentTest.Calls.Count -eq 0) 'La validación debe ocurrir antes de Docker'
+  $global:LASTEXITCODE = 0
   Write-Host '5 escenarios de despliegue OK: éxito, rollback, primer fallo, pull fallido y rechazo de referencia no confiable'
 } finally {
   Remove-Item -LiteralPath Function:\docker -ErrorAction SilentlyContinue
