@@ -1,0 +1,34 @@
+{
+  "name": "container-cicd-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API de cotizaciones con Docker, CI/CD y despliegue local desde GitHub Actions",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src tests scripts/*.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "test:coverage": "npm run build && c8 node --test dist/tests/*.test.js",
+    "verify": "npm run format:check && npm run lint && npm run check && npm run test:coverage",
+    "start": "node dist/src/main.js",
+    "dev": "npm run build && npm start",
+    "smoke": "node scripts/smoke.mjs",
+    "container:test": "node scripts/container-test.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "c8": "12.0.0",
+    "eslint": "10.11.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.0"
+  }
+}

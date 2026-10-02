@@ -1,0 +1,12 @@
+{
+  "all": true,
+  "src": ["dist/src"],
+  "include": ["dist/src/**/*.js"],
+  "exclude": ["dist/src/main.js"],
+  "exclude-after-remap": false,
+  "reporter": ["text", "lcov", "cobertura"],
+  "check-coverage": true,
+  "lines": 90,
+  "functions": 90,
+  "branches": 85
+}

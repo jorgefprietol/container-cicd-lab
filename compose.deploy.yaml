@@ -1,0 +1,22 @@
+name: container-cicd-lab
+services:
+  api:
+    image: ${IMAGE_REF:?IMAGE_REF debe incluir un digest inmutable}
+    ports:
+      - '127.0.0.1:8088:8080'
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 128m
+    cpus: 1.0
+    pids_limit: 64
+    stop_grace_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '3'
