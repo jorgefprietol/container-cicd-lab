@@ -23,6 +23,8 @@ Antes de reemplazar el servicio se crea un contenedor temporal sin arrancarlo, s
 
 ## Verificar y consultar logs
 
+Cada instancia tiene una red dedicada con IPAM explícito: `10.231.88.0/28` para CD y `10.231.89.0/28` para desarrollo. Se comprobaron las redes Docker y rutas de esta laptop antes de elegir esos rangos. Esto permite crear el proyecto aunque Docker haya agotado sus pools automáticos, sin borrar redes existentes. En otro equipo, ajusta `DEPLOY_NETWORK_SUBNET` o `DEV_NETWORK_SUBNET` si hay solapamientos; para CD, configura la variable en el entorno del proceso del runner antes de iniciarlo. [IPAM de Compose](https://docs.docker.com/reference/compose-file/networks/#ipam).
+
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8088/health/ready
 Invoke-RestMethod http://127.0.0.1:8088/metrics

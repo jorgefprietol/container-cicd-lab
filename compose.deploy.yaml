@@ -21,3 +21,8 @@ services:
       options:
         max-size: '5m'
         max-file: '3'
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${DEPLOY_NETWORK_SUBNET:-10.231.88.0/28}
