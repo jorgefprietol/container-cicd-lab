@@ -2,15 +2,15 @@
 
 ## Eventos y permisos
 
-| Evento                           | CI                | GHCR                        | Laptop                           |
-| -------------------------------- | ----------------- | --------------------------- | -------------------------------- |
-| Pull request a main              | Sí, runner GitHub | No                          | No                               |
-| Push a main                      | Sí                | Sí, si pasa todos los gates | Automático tras CI exitoso       |
-| Tag vX.Y.Z                       | Sí                | Sí, si pertenece a main     | No despliegue automático por tag |
-| Ejecución manual de CI en main   | Sí                | Sí                          | Sí tras éxito                    |
-| Deploy manual en main con digest | No reconstruye    | Reutiliza imagen firmada    | Sí, permite rollback             |
+| Evento                         | CI                | GHCR                        | Laptop                                   |
+| ------------------------------ | ----------------- | --------------------------- | ---------------------------------------- |
+| Pull request a main            | Sí, runner GitHub | No                          | No                                       |
+| Push a main                    | Sí                | Sí, si pasa todos los gates | Reconciliación desde controlador privado |
+| Tag vX.Y.Z                     | Sí                | Sí, si pertenece a main     | No despliegue automático por tag         |
+| Ejecución manual de CI en main | Sí                | Sí                          | Sí tras éxito                            |
+| Controlador privado con SHA    | No reconstruye    | Reutiliza imagen firmada    | Sí, permite rollback                     |
 
-El permiso global de CI es `contents: read`. Solo `publish` dispone de `packages: write`, `id-token: write` y `attestations: write`. El despliegue tiene permisos de lectura para contenido, artefactos, paquetes y attestations. Se utiliza el `GITHUB_TOKEN` temporal de cada job; no hay PAT guardado en el repositorio.
+El permiso global de CI es `contents: read`. Solo `publish` dispone de `packages: write`, `id-token: write` y `attestations: write`. El controlador privado tiene permisos de lectura; consulta metadatos públicos de CI y verifica attestations. Se utiliza el `GITHUB_TOKEN` temporal de cada job; no hay PAT guardado en el repositorio.
 
 Todas las acciones externas se fijan por SHA completo. Dependabot revisa npm, Docker y Actions semanalmente. Los workflows no usan `pull_request_target` ni construyen o ejecutan código de forks con permisos de publicación. La política del repositorio exige aprobación para workflows de todos los contribuidores externos.
 

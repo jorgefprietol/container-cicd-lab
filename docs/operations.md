@@ -2,11 +2,9 @@
 
 ## Runner dedicado
 
-El runner pertenece exclusivamente a `jorgefprietol/container-cicd-lab`, con etiqueta `container-cicd-lab-local`. En esta laptop se instala fuera del repositorio, en `D:\Cursos\.tools\github-runner-container-cicd-lab`. Sus credenciales y archivos `.runner` / `.credentials` nunca se suben a GitHub.
+El runner pertenece exclusivamente al repositorio privado `jorgefprietol/container-cicd-lab-deploy`, con etiqueta `container-cicd-lab-local`. Sus credenciales y archivos de registro permanecen fuera de ambos checkouts. El código público usa runners efímeros de GitHub; sus pull requests no pueden seleccionar un runner registrado en el controlador privado.
 
-Se ejecuta como proceso oculto, bajo el usuario que usa Docker Desktop. Tras reiniciar Windows, abre Docker Desktop y ejecuta `scripts/start-runner.ps1`. `scripts/stop-runner.ps1` detiene solo los ejecutables de esa instalación; el servicio desplegado sigue en Docker.
-
-GitHub recomienda runners propios en repositorios privados por el riesgo de que un pull request modifique un workflow para ejecutar código en el equipo. Aquí el repositorio es público por elección del propietario: se exige aprobación para todos los contribuidores externos, CI usa runners de GitHub y el despliegue local solo se activa desde main o por ejecución manual autorizada. Antes de aprobar un workflow externo, revisa cambios en `runs-on`, eventos, permisos y scripts. [Referencia oficial](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners).
+El controlador consulta CI y el SHA de main, obtiene la imagen publicada y exige atestación del workflow y commit esperados. Ejecuta únicamente sus scripts y Compose privados. Sus scripts de inicio y parada corren como procesos ocultos y conservan los contenedores al detener el listener.
 
 ## Estado
 
@@ -36,7 +34,7 @@ Si el runner está offline, GitHub conserva el trabajo en cola. Si Docker Deskto
 
 ## Rollback manual
 
-Abre **Actions → Deploy local laptop → Run workflow**, elige `main` e introduce el digest anterior, `sha256:...`. El workflow verifica la attestation y despliega ese mismo artefacto sin reconstruirlo.
+En el repositorio privado abre **Actions → Private laptop deployment → Run workflow**, elige `main` e introduce el SHA completo de la revisión anterior. El workflow verifica la attestation y despliega ese mismo artefacto sin reconstruirlo.
 
 ```powershell
 $previousImage = Get-Content "$env:LOCALAPPDATA\container-cicd-lab\previous-image.txt" -Raw
