@@ -20,7 +20,9 @@ flowchart LR
 
 ## Contenedor
 
-La etapa `build` instala exactamente el lockfile y compila. La etapa `runtime` copia solamente el JavaScript compilado y `package.json`, usa `USER node` y arranca Node directamente para recibir SIGTERM. La base Node 24 Alpine y el frontend Dockerfile están fijados por digest. Dependabot propone actualizaciones; CI vuelve a comprobarlas.
+La etapa `build` instala exactamente el lockfile y compila. La etapa `runtime` copia solamente el JavaScript compilado y `package.json`, elimina npm/Yarn que no se necesitan en ejecución, usa `USER node` y arranca Node directamente para recibir SIGTERM. La base Node 24 Debian Bookworm Slim y el frontend Dockerfile están fijados por digest. Dependabot propone actualizaciones; CI vuelve a comprobarlas.
+
+El primer scan bloqueó la base Alpine por vulnerabilidades en las dependencias del npm global y en zlib 1.3.2. Se cambió la distribución de la base y se retiraron las herramientas de instalación del runtime, manteniendo el gate de severidad alta/crítica y sin añadir excepciones.
 
 Compose limita RAM a 128 MiB, CPU a una unidad y procesos a 64. El sistema de archivos es de solo lectura, las capacidades se eliminan y se impide ganar privilegios. `/tmp` es un tmpfs limitado. El puerto del host escucha en `127.0.0.1`; Docker Desktop ejecuta un contenedor Linux dentro de su entorno administrado.
 
