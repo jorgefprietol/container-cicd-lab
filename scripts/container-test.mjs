@@ -32,7 +32,7 @@ try {
     image,
   );
   const inspection = JSON.parse(await docker('inspect', name))[0];
-  assert.equal(inspection.Config.User, 'node');
+  assert.equal(inspection.Config.User, '65532:65532');
   assert.equal(inspection.HostConfig.ReadonlyRootfs, true);
   assert.deepEqual(inspection.HostConfig.CapDrop, ['ALL']);
   const port = inspection.NetworkSettings.Ports['8080/tcp'][0].HostPort;
