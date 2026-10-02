@@ -2,6 +2,7 @@ name: container-cicd-lab
 services:
   api:
     image: ${IMAGE_REF:?IMAGE_REF debe incluir un digest inmutable}
+    platform: linux/amd64
     ports:
       - '127.0.0.1:8088:8080'
     init: true

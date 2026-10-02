@@ -19,6 +19,8 @@ El estado estable se guarda fuera del checkout del runner, en `%LOCALAPPDATA%\co
 
 La configuración de registro de cada job se guarda en un `DOCKER_CONFIG` temporal. Al terminar se elimina exclusivamente esa carpeta, sin modificar el login de Docker del usuario.
 
+Antes de reemplazar el servicio se crea un contenedor temporal sin arrancarlo, se comprueban sus etiquetas de origen y revisión y se elimina. Esta comprobación evita el `Config` vacío que Docker Desktop con containerd puede devolver al inspeccionar una referencia por digest. Tanto la descarga como Compose seleccionan explícitamente `linux/amd64`.
+
 ## Verificar y consultar logs
 
 ```powershell

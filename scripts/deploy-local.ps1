@@ -33,10 +33,20 @@ try {
   if ($previous -and $previous -cnotmatch '^ghcr\.io/jorgefprietol/container-cicd-lab@sha256:[a-f0-9]{64}$') {
     throw 'El estado de despliegue anterior no es válido'
   }
-  Invoke-DockerChecked -Arguments @('pull', $ImageRef)
-  $labels = & docker image inspect $ImageRef --format '{{json .Config.Labels}}'
-  if ($LASTEXITCODE -ne 0) { throw 'No se puede inspeccionar la imagen' }
-  $metadata = $labels | ConvertFrom-Json
+  Invoke-DockerChecked -Arguments @('pull', '--platform', 'linux/amd64', $ImageRef)
+  # Docker Desktop con containerd puede devolver Config vacío al inspeccionar un digest.
+  # Crear sin arrancar resuelve la configuración real sin ejecutar la aplicación.
+  $probeName = 'container-cicd-preflight-' + [guid]::NewGuid().ToString('N')
+  $probeCreated = $false
+  try {
+    Invoke-DockerChecked -Arguments @('create', '--platform', 'linux/amd64', '--name', $probeName, '--entrypoint', '/usr/bin/node', $ImageRef, '--version')
+    $probeCreated = $true
+    $labels = & docker container inspect $probeName --format '{{json .Config.Labels}}'
+    if ($LASTEXITCODE -ne 0) { throw 'No se puede inspeccionar el contenedor de preflight' }
+    $metadata = $labels | ConvertFrom-Json
+  } finally {
+    if ($probeCreated) { Invoke-DockerChecked -Arguments @('rm', $probeName) }
+  }
   if ($metadata.'org.opencontainers.image.source' -ne 'https://github.com/jorgefprietol/container-cicd-lab') {
     throw 'La imagen no pertenece a este repositorio'
   }

@@ -13,7 +13,7 @@ function global:docker {
   $global:LASTEXITCODE = 0
   $global:deploymentTest.Calls.Add(@($args))
   if ($args[0] -eq 'pull' -and $global:deploymentTest.FailPull) { $global:LASTEXITCODE = 1; return }
-  if ($args[0] -eq 'image') {
+  if ($args[0] -eq 'container' -and $args[1] -eq 'inspect') {
     return '{"org.opencontainers.image.source":"https://github.com/jorgefprietol/container-cicd-lab","org.opencontainers.image.revision":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}'
   }
 }
