@@ -32,7 +32,7 @@ La imagen se construye una vez por ejecución de CI. Se exporta con checksum SHA
 
 ## Despliegue
 
-El runner local no compila ni hace pruebas de pull requests: recupera la referencia inmutable publicada por CI. El job requiere el repositorio de origen, `main`, CI exitoso y el entorno `local-laptop`. La verificación de procedencia exige el workflow CI del repositorio, un firmante alojado en GitHub y, en despliegue automático, el commit esperado.
+El runner local está registrado exclusivamente en `container-cicd-lab-deploy`, un repositorio privado. Recupera la referencia inmutable publicada por CI y ejecuta únicamente scripts del controlador privado. Exige el repositorio de origen, `main`, CI exitoso, el workflow firmante alojado en GitHub y el commit esperado. Los PR públicos sólo acceden a runners efímeros de GitHub.
 
 Compose reemplaza un único servicio. Hay una breve interrupción al reemplazarlo; no se presenta este ejemplo como un despliegue sin interrupciones. El script conserva el digest estable y, ante fallo de readiness o prueba funcional, restaura la versión anterior. Un fallo de descarga ocurre antes de tocar el contenedor.
 

@@ -1,14 +1,14 @@
 # Container CI/CD Lab
 
 [![CI](https://github.com/jorgefprietol/container-cicd-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/jorgefprietol/container-cicd-lab/actions/workflows/ci.yml)
-[![Deploy local](https://github.com/jorgefprietol/container-cicd-lab/actions/workflows/deploy-local.yml/badge.svg)](https://github.com/jorgefprietol/container-cicd-lab/actions/workflows/deploy-local.yml)
 
 Proyecto independiente de contenerización y entrega de software. Incluye una API de cotizaciones en TypeScript, Docker multietapa, CI en GitHub, imágenes en GHCR y CD hacia Docker Desktop en la laptop Windows del propietario.
 
 ## Ejecutar con Docker
 
 ```powershell
-cd D:\Cursos\container-cicd-lab
+git clone https://github.com/jorgefprietol/container-cicd-lab.git
+cd container-cicd-lab
 docker compose up --build -d --wait
 Invoke-RestMethod http://127.0.0.1:8089/health/ready
 ```
@@ -44,7 +44,7 @@ node scripts/container-test.mjs container-cicd-lab:local
 1. **quality**: instalación desde lockfile, formato, ESLint, tipos, pruebas, cobertura, auditoría npm y validación de workflows con actionlint.
 2. **container**: construye una imagen `linux/amd64`, prueba el contenedor real, bloquea vulnerabilidades altas o críticas y genera un SBOM SPDX.
 3. **publish**: recupera y verifica la imagen ya probada, la publica sin reconstruir en GHCR y firma procedencia y SBOM con GitHub OIDC.
-4. **Deploy local laptop**: después de CI exitoso en `main`, el runner de Windows verifica la firma y el commit, despliega por digest y ejecuta readiness y una prueba funcional. Si falla, restaura la versión previa.
+4. **Controlador privado**: `container-cicd-lab-deploy` comprueba CI exitoso en `main`, verifica la firma y el commit, despliega por digest y ejecuta readiness y una prueba funcional. Si falla, restaura la versión previa.
 
 Los pull requests ejecutan únicamente CI en runners de GitHub. No publican imágenes ni despliegan en la laptop. Las imágenes se etiquetan `sha-<commit completo>`; los tags `vX.Y.Z` agregan una etiqueta de versión y deben apuntar a la historia de `main`. El despliegue utiliza `@sha256:...`, nunca una etiqueta mutable.
 
@@ -57,11 +57,12 @@ Invoke-RestMethod http://127.0.0.1:8088/health/ready
 npm run smoke
 
 # Reiniciar el runner después de reiniciar Windows
+# Desde el checkout privado container-cicd-lab-deploy
 ./scripts/start-runner.ps1
 # Detener la recepción de trabajos
 ./scripts/stop-runner.ps1
 ```
 
-El runner se ejecuta como proceso oculto bajo la cuenta del usuario; no se instala como servicio ni como tarea de inicio. Docker Desktop y el runner deben estar activos para recibir despliegues. El contenedor tiene `restart: unless-stopped` y vuelve a arrancar cuando Docker Desktop está disponible.
+El runner está registrado exclusivamente en el repositorio privado `container-cicd-lab-deploy`. El código público usa únicamente runners de GitHub. El runner privado se ejecuta como proceso oculto bajo la cuenta del usuario; no se instala como servicio ni como tarea de inicio. Docker Desktop y el runner deben estar activos para recibir despliegues. El contenedor tiene `restart: unless-stopped` y vuelve a arrancar cuando Docker Desktop está disponible.
 
 [Arquitectura y decisiones](docs/architecture.md) · [Pipeline y mantenimiento](docs/pipeline.md) · [Despliegue, rollback y runner](docs/operations.md) · [Verificación](docs/verification.md).
