@@ -33,6 +33,14 @@ try {
   );
   const inspection = JSON.parse(await docker('inspect', name))[0];
   assert.equal(inspection.Config.User, '65532:65532');
+  if (process.env.EXPECTED_RUNTIME_NODE) {
+    const runtimeVersion = await docker('exec', name, '/usr/bin/node', '--version');
+    assert.equal(
+      runtimeVersion,
+      `v${process.env.EXPECTED_RUNTIME_NODE}`,
+      'CI y runtime deben usar la versión de Node verificada',
+    );
+  }
   assert.equal(inspection.HostConfig.ReadonlyRootfs, true);
   assert.deepEqual(inspection.HostConfig.CapDrop, ['ALL']);
   const port = inspection.NetworkSettings.Ports['8080/tcp'][0].HostPort;
